@@ -7,16 +7,45 @@
     <title>Toys API</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="icon" href="https://images.pexels.com/photos/381228/pexels-photo-381228.jpeg?auto=compress&cs=tinysrgb&w=800" type="image/x-icon">
-
+    <link rel="icon"
+        href="https://images.pexels.com/photos/381228/pexels-photo-381228.jpeg?auto=compress&cs=tinysrgb&w=800"
+        type="image/x-icon">
+    <style>
+        .left-align {
+            text-align: left !important;
+        }
+    </style>
 </head>
 
 <body>
-
-    <div id="userRoutes" class="container">
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
+    <header id="top">
+        <nav class="navbar navbar-expand-lg bg-black p-3">
+            <div class="container-fluid">
+                <a class="navbar-brand text-warning fw-bold fs-4" href="#top">Toys Api</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link text-warning fw-bold" aria-current="page" href="#usersRoutes">Users
+                                Routes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-warning fw-bold" href="#toysRoutes">Toys Routes</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <h1 class="display-5 d-flex justify-content-center mt-4 text-warning fw-bolder">Users Routes</h1>
+    <div id="usersRoutes" class="container p-2 shadow">
+        <table class="table table-bordered table-striped bg-warning mb-0">
+            <thead class="table-dark table-borderless">
+                <tr class="fs-4">
                     <th>Method</th>
                     <th>URL</th>
                     <th>Body</th>
@@ -26,25 +55,129 @@
             <tbody>
                 <tr>
                     <td>GET</td>
-                    <td>/api/resource</td>
-                    <td></td>
-                    <td>Retrieve resource information</td>
+                    <td><a href="/users/getUserInfo">/users/getUserInfo</a></td>
+                    <td>None</td>
+                    <td>Get user info - by token.</td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td><a href="/users">/users</a></td>
+                    <td>None</td>
+                    <td>Get all users - by token admin.</td>
                 </tr>
                 <tr>
                     <td>POST</td>
-                    <td>/api/resource</td>
-                    <td>{"key": "value"}</td>
-                    <td>Create a new resource</td>
+                    <td>/users</td>
+                    <td>
+                        <pre>
+{
+    "name": "Michal",
+    "email": "Michal@gmail.com",
+    "password": "pass1234",
+    "role": "admin"
+}</pre>
+                    </td>
+                    <td>Create a new user - register</td>
                 </tr>
                 <tr>
-                    <td>PUT</td>
-                    <td>/api/resource/123</td>
-                    <td>{"key": "new-value"}</td>
-                    <td>Update resource with ID 123</td>
+                    <td>POST</td>
+                    <td>/users/login</td>
+                    <td>
+                        <pre>
+{
+    "email": "Michal@gmail.com",
+    "password": "pass1234",
+}</pre>
+                    </td>
+                    <td>Login - if all fields correct, the token will save on cookies.</td>
                 </tr>
             </tbody>
         </table>
     </div>
+
+    <h1 class="display-5 d-flex justify-content-center mt-4 text-warning fw-bolder">Toys Routes</h1>
+    <div id="toysRoutes" class="container mb-4 p-2 shadow">
+        <table class="table table-bordered table-striped bg-warning mb-0">
+            <thead class="table-dark table-borderless">
+                <tr class="fs-4">
+                    <th>Method</th>
+                    <th>URL</th>
+                    <th>Body</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>GET</td>
+                    <td>/domain/toys</td>
+                    <td>None</td>
+                    <td>Get all toys - will present 10 results per page.</td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td>/domain/toys/single/{id}</td>
+                    <td>None</td>
+                    <td>Get toy by id</td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td>/domain/toys/category/{catname}</td>
+                    <td>None</td>
+                    <td>Get toy by category name - will present 10 results per page.</td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td>/domain/toys/prices?min={min}&max={max}</td>
+                    <td>None</td>
+                    <td>Get toy by min/max prices - will present 10 results per page.</td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td>/domain/toys/search?s={name/info}</td>
+                    <td>None</td>
+                    <td>Search toys by name or info - will present 10 results per page.</td>
+                </tr>
+                <tr>
+                    <td>POST</td>
+                    <td>/domain/toys</td>
+                    <td>
+                        <pre class="left-align">
+{
+    "name": "Harry",
+    "info": "Harry Potter",
+    "category": "Stories",
+    "image_url": "harryPotter.png",
+    "price": 100
+}                    
+                        </pre>
+                    </td>
+                    <td>Add a new toy to the user that login now.</td>
+                </tr>
+                <tr>
+                    <td>PATCH</td>
+                    <td>/domain/toys/{editId}</td>
+                    <td>
+                        <pre class="text-start">
+{
+    "image_url": "harry_potter.png",
+    "price": 25
+}</pre>
+                    </td>
+                    <td>Edit toy after login.</td>
+                </tr>
+                <tr>
+                    <td>DELETE</td>
+                    <td>/domain/toys/{delId}</td>
+                    <td>None</td>
+                    <td>Delete toy after login.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>

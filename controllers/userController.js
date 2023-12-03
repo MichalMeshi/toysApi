@@ -1,24 +1,28 @@
 const { User } = require('../models/user.models');
 const bcrypt = require('bcryptjs');
 const Joi = require('joi');
-const { generateToken } = require('../utils/jwt');
+const { generateToken, decodeToken } = require('../utils/jwt');
 const asyncWrap = require('../utils/asyncWrapper');
 const AppError = require('../utils/AppError');
+
 exports.getUsers = asyncWrap(async (req, res, next) => {
     const users = await User.find().populate("toys");
-    res.status(200).send(users);
+    res.status(200).json(users);
 })
 
-// exports.getUser = async (req, res, next) => {
-//     const { id } = req.params;
-//     try {
-//         const user = await User.findById(id);
-//         if (!user) throw Error("User not exist");
-//         res.status(200).send(user);
-//     } catch (error) {
-//         next(error);
-//     }
-// }
+exports.getUser = asyncWrap(async (req, res, next) => {
+    const token = req.cookies.jwt; // Assuming you're using a library like cookie-parser to parse cookies
+    if (!token) return next(new AppError(401, "Please login"));
+
+    const payload = decodeToken(token);
+    const id = payload._doc.id;
+
+    const user = await User.findById(id).populate('toys');
+    if (!user) return next(new AppError(400, "User not exist"));
+
+    res.status(200).json(user);
+});
+
 const userJoiSchema = {
     login: Joi.object().keys({
         password: Joi.string(),
@@ -47,7 +51,7 @@ exports.register = asyncWrap(async (req, res, next) => {
 });
 
 const checkIfUserExist = async (email) => {
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email }).populate('toys');
     return user;
 }
 
