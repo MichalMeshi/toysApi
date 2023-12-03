@@ -18,8 +18,8 @@ exports.getToyById = asyncWrap(async (req, res, next) => {
     const { id } = req.params;
 
     const toy = await Toy.findById(id);
-    if (!toy) throw Error("Toy not exist");
-    res.status(200).send(toy);
+    if (!toy) return next(new Error(404, "Toy not exist"));
+    res.status(200).json(toy);
 });
 
 exports.searchToy = asyncWrap(async (req, res, next) => {
@@ -65,12 +65,24 @@ exports.getToyByCategory = asyncWrap(async (req, res, next) => {
     const toy = await Toy.findOne({ category: catname })
         .skip(skip)
         .limit(perPage);
-    if (!toy) throw Error("Toy not exist");
-    res.status(200).send(toy);
+    if (!toy) return next(new AppError(404, "Toy not exist"));
+    res.status(200).json(toy);
 });
+
+const toyJoiSchema = {
+    addToy: Joi.object().keys({
+        name: Joi.string(),
+        info: Joi.string(),
+        category: Joi.string(),
+        price: Joi.number(),
+        image_url: Joi.string()
+    })
+}
 
 exports.addToy = asyncWrap(async (req, res, next) => {
     const toy = { ...req.body };
+    const validate = toyJoiSchema.addToy.validate(toy);
+    if (validate.error) return next(new AppError(400, validate.error));
     toy.user = req.user._id;
 
     const newToy = await Toy.create(toy);
@@ -78,7 +90,7 @@ exports.addToy = asyncWrap(async (req, res, next) => {
     await req.user.save();
 
     res.status(201).json({
-        status: "saccess",
+        status: "success",
         newToy,
     });
 });
@@ -88,7 +100,7 @@ exports.editToy = asyncWrap(async (req, res, next) => {
     const updateData = req.body;
 
     const updatedToy = await Toy.findByIdAndUpdate(editId, updateData);
-    if (!updatedToy) throw Error('Toy not found')
+    if (!updatedToy) return next(AppError(404, 'Toy not found'));
     res.status(201).json({ msg: "Toy updated successfuly", updatedToy });
 });
 
@@ -97,7 +109,7 @@ exports.deleteToy = asyncWrap(async (req, res, next) => {
     console.log(delId);
     const deletedToy = await Toy.findByIdAndDelete(delId);
     console.log(deletedToy);
-    if (!deletedToy) throw new Error("Toy not found");
+    if (!deletedToy) return next(new AppError(404, "Toy not found"));
 
     const user = req.user;
     user.toys = user.toys.filter(toyId => toyId.toString() !== delId);

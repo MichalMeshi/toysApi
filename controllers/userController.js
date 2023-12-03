@@ -39,15 +39,15 @@ const userJoiSchema = {
 exports.register = asyncWrap(async (req, res, next) => {
     const body = req.body;
     const validate = userJoiSchema.register.validate(body);
-    if (validate.error) throw Error(validate.error);
+    if (validate.error) return next(new AppError(400, validate.error));
 
     const user = await checkIfUserExist(body.email);
-    if (user) throw Error('User already exist');
+    if (user) return next(new AppError(401, 'User already exist'));
 
     const newUser = new User(body);
     await newUser.save();
 
-    res.status(201).send(newUser);
+    res.status(201).json(newUser);
 });
 
 const checkIfUserExist = async (email) => {
@@ -58,7 +58,7 @@ const checkIfUserExist = async (email) => {
 exports.login = asyncWrap(async (req, res, next) => {
     const body = req.body;
     const validate = userJoiSchema.login.validate(body);
-    if (validate.error) throw Error(validate.error);
+    if (validate.error) return next(new AppError(400, validate.error));
 
     const user = await checkIfUserExist(body.email);
     if (!user) return next(new AppError(404, 'User not exist, please register before login'));
