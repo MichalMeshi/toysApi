@@ -1,0 +1,9 @@
+.nav-link:hover {
+    color: white !important;
+    transform: scale(1.1);
+    transition: 1s;
+}
+
+nav {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif !important;
+}
